@@ -17,17 +17,6 @@ class SuiteRender(object):
             self.framework = 'qunit' # default framework
 
     def _get_modules_with_jstest(self):
-        # exclude_apps = (
-        #     "django.contrib.auth",
-        #     'django.contrib.contenttypes',
-        #     'django.contrib.sessions',
-        #     'django.contrib.sites',
-        # )
-        # 
-        # for a in settings.INSTALLED_APPS:
-        #     if not a in exclude_apps:
-        #         apps.append(a)
-
         apps, modules = [a for a in settings.INSTALLED_APPS], []
         app = self.app
         
@@ -77,6 +66,7 @@ class SuiteRender(object):
             'jslibs': self._get_jslibs(modules),
             'tests': self._get_tests(modules)
         }
+        
         return render_to_response(
             'jstest/%s/index.html' % self.framework, context,
             context_instance = RequestContext(request) )
