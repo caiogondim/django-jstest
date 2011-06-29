@@ -1,23 +1,29 @@
 <html>
+
 	<head>
-		<title>QUnit</title>
+		<title>QUnit Test Suite{% if app %} - {{ app }}{% endif %}</title>
+		
 		<link rel="stylesheet" href="{% url qunit_css %}" type="text/css" />
 		<script type="text/javascript" src="{% url qunit_js %}"></script>
-		<!-- Libraries -->
+		
+		<!-- Libraries (dependencies and source code) -->
 		{% for src in jslibs %}
 		<script type="text/javascript" src="{{ MEDIA_URL }}{{ src }}"></script>
 		{% endfor %}
+		
 		<!-- QUnit Tests -->
 		<script type="text/javascript">
 			{{ tests|safe }}
-		</script>
+		</script>	
 	</head>
+	
 	<body>
-		<h1 id="qunit-header">QUnit Test Suite {% if app %}- {{ app }}{% endif %}</h1>
+		<h1 id="qunit-header">QUnit Test Suite{% if app %} - {{ app }}{% endif %}</h1>
 		<h2 id="qunit-banner"></h2>
 		<div id="qunit-testrunner-toolbar"></div>
 		<h2 id="qunit-userAgent"></h2>
 		<ol id="qunit-tests"></ol>
 		<div id="qunit-fixture"></div>
 	</body>
+	
 </html>
