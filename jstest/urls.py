@@ -3,6 +3,7 @@
 from django.conf.urls.defaults import url, patterns
 import os
 
+
 media_root = os.path.join(os.path.dirname(__file__), 'jstest_media')
 serve = 'django.views.static.serve'
 
