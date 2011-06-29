@@ -5,16 +5,17 @@ from django.utils import simplejson
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from jstest.conf import DEFAULT_FRAMEWORK, SUPPORTED
+
 
 class SuiteRender(object):
     
     def __init__(self, framework=None, app=None):
-        suported_frameworks = ['qunit', 'jasmine']
         self.app = app
-        if framework in suported_frameworks:
+        if framework in SUPPORTED:
             self.framework = framework
         else:
-            self.framework = 'qunit' # default framework
+            self.framework = DEFAULT_FRAMEWORK
 
     def _get_modules_with_jstest(self):
         apps, modules = [a for a in settings.INSTALLED_APPS], []

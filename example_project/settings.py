@@ -11,7 +11,7 @@ MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'mymedia')
 MEDIA_URL = '/mymedia/'
 ADMIN_MEDIA_PREFIX = '/myadminmedia/'
 
-ROOT_URLCONF = 'jstest_project.urls'
+ROOT_URLCONF = 'example_project.urls'
 
 INSTALLED_APPS = (
     'jstest',

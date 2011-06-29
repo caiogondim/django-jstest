@@ -1,6 +1,4 @@
-FRAMEWORKS_LIBS = {
-    'qunit': [
-        'jstest/js/qunit/qunit.js',
-    ],
-    'jasmine': [],
-}
+# coding: utf-8
+
+DEFAULT_FRAMEWORK = 'qunit'
+SUPPORTED = ('qunit', 'jasmine')
