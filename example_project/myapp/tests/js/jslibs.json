@@ -1,5 +1,5 @@
 [{ 
     "libs": [
-        "jstest.functions.js"
+        "myapp.functions.js"
     ]
 }]
