@@ -1,18 +1,23 @@
 <html>
 
 	<head>
-	  <title>Jasmine Test Suite {% if app %}- {{ app }}{% endif %}</title>
+	  	<title>Jasmine Test Suite{% if app %} - {{ app }}{% endif %}</title>
   
 		<link rel="stylesheet" href="{% url jasmine_css %}" type="text/css" />
 		<script type="text/javascript" src="{% url jasmine_js %}"></script>
 		<script type="text/javascript" src="{% url jasmine_html_js %}"></script>
 
-		<!-- Libraries (dependencies and source code) -->
-		{% for src in jslibs %}
+		<!-- CSS -->
+		{% for src in media.css %}
+		<link rel="stylesheet" href="{{ MEDIA_URL }}{{ src }}" type="text/css" />
+		{% endfor %}
+
+		<!-- JS -->
+		{% for src in media.js %}
 		<script type="text/javascript" src="{{ MEDIA_URL }}{{ src }}"></script>
 		{% endfor %}
   
-		<!-- Jasmine Tests (specs) -->
+		<!-- Jasmine Tests -->
 		<script type="text/javascript">
 			{{ tests|safe }}
 		</script>
@@ -20,7 +25,8 @@
 
 	<body>
 		<div id="main">
-		  <!-- HTML here -->
+		  <!-- Fixtures -->
+		  {{ html|safe }}
 		</div>
 		<script type="text/javascript">
 			jasmine.getEnv().addReporter(new jasmine.TrivialReporter());

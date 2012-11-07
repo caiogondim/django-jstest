@@ -1,27 +1,32 @@
 # coding: utf-8
 
+import os
+import fnmatch
+
 from django.conf import settings
 from django.utils import simplejson
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from jstest.conf import DEFAULT_FRAMEWORK, SUPPORTED
-
 
 class SuiteRender(object):
-    
+
+    SUPPORTED = ('qunit', 'jasmine')
+
     def __init__(self, framework=None, app=None):
         self.app = app
-        if framework in SUPPORTED:
+
+        if framework in self.SUPPORTED:
             self.framework = framework
         else:
-            self.framework = DEFAULT_FRAMEWORK
+            raise FrameworkNotSupported('Framework  %s not supported' % framework)
+        self.modules = self._get_modules_with_jstest()
 
     def _get_modules_with_jstest(self):
         apps, modules = [a for a in settings.INSTALLED_APPS], []
         app = self.app
-        
-        if app != None:
+
+        if app is not None:
             if not app in apps:
                 return []
             apps = [app]
@@ -36,42 +41,59 @@ class SuiteRender(object):
 
         return modules
 
-    def _get_jslibs(self, modules):
-        js = []
-        for m in modules:
-            json_file = "%s/jslibs.json" % (m.__path__[0])
-            try:
-                content = simplejson.loads(open(json_file, 'r').read())
-                for src in content[0]["libs"]:
-                    js.append(src)
-            except:
-                pass
+    def _get_json_media(self):
+        media = {"js": [], "css": []}
+        json_name = "media.json"
 
-        return js
+        for m in self.modules:
+            for top, dirs, files in os.walk(m.__path__[0] + "/" + self.framework):
+                if json_name in files:
+                    try:
+                        content = simplejson.loads(open(os.path.join(top, json_name), 'r').read())
+                        media["js"] += content["js"]
+                        media["css"] += content["css"]
+                    except:
+                        pass
 
-    def _get_tests(self, modules):
-        tests = ""
-        for m in modules:
-            tests_file_path = "%s/%s/tests.js" % (m.__path__[0], self.framework)
-            try:
-                tests += open(tests_file_path, 'r').read()
-            except:
-                pass
-        
-        return tests
+        return media
+
+    def _get_tests(self):
+        content = ""
+        tests_name = "tests.js"
+
+        for m in self.modules:
+            for top, dirs, files in os.walk(m.__path__[0] + "/" + self.framework):
+                try:
+                    content += open(os.path.join(top, tests_name), 'r').read()
+                except:
+                    pass
+
+        return content
+
+    def _get_fixtures(self):
+        content = ""
+        html_name = "fixtures.html"
+
+        for m in self.modules:
+            for top, dirs, files in os.walk(m.__path__[0] + "/" + self.framework):
+                try:
+                    content += open(os.path.join(top, html_name), 'r').read()
+                except:
+                    pass
+
+        return content
 
     def to_browser(self, request):
-        modules = self._get_modules_with_jstest()
         context = {
             'app': self.app,
-            'jslibs': self._get_jslibs(modules),
-            'tests': self._get_tests(modules)
+            'media': self._get_json_media(),
+            'tests': self._get_tests(),
+            'html': self._get_fixtures()
         }
-        
+
         return render_to_response(
             'jstest/%s/index.html' % self.framework, context,
-            context_instance = RequestContext(request) )
+            context_instance=RequestContext(request))
 
     def to_console(self):
         pass
-

@@ -11,7 +11,7 @@ class SuiteRenderTest(TestCase):
         self.assertEquals(render.framework, 'qunit')
         self.assertEquals(render.app, None)
 
-    def test_initializing_suiterender_with_unsuported_framework(self):
+    def test_initializing_suiterender_with_unsuported_framework_choose_the_default_one(self):
         render = SuiteRender('unsuported')
         self.assertEquals(render.framework, 'qunit')
 

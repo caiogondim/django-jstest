@@ -1,7 +1,7 @@
 # coding: utf-8
 
-from django.conf.urls.defaults import url, patterns
 import os
+from django.conf.urls.defaults import url, patterns
 
 
 media_root = os.path.join(os.path.dirname(__file__), 'jstest_media')
