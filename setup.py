@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='Django JSTest',
-    description=u'App Django para rodar testes unitários de javascript',
+    description=u'Django app to run javascript unit tests',
     author='Entretenimento',
     author_email='entretenimento@corp.globo.com',
     url='http://ngit.globoi.com/django-jstest/django-jstest',

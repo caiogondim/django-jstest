@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <title>{% block title %}{% endblock title %}{% if app %} - {{ app }}{% endif %}</title>
+        
+        {% block framework_media %}
+        {% endblock framework_media %}
+
+        <!-- CSS -->
+        {% for src in media.css %}<link rel="stylesheet" href="{{ MEDIA_URL }}{{ src }}" type="text/css" />
+        {% endfor %}
+
+        <!-- JS -->
+        {% for src in media.js %}<script type="text/javascript" src="{{ MEDIA_URL }}{{ src }}"></script>
+        {% endfor %}
+
+        <!-- Tests -->
+        <script type="text/javascript">
+            {{ tests|safe }}
+        </script>
+    </head>
+
+    <body>
+        {% block content %}
+        <!-- Fixtures -->
+        {{ html|safe }}
+        {% endblock content %}
+    </body>
+    
+</html>

@@ -1,37 +1,13 @@
-<html>
+{% extends "jstest/base_spec.html" %}
 
-	<head>
-		<title>QUnit Test Suite{% if app %} - {{ app }}{% endif %}</title>
-		
-		<link rel="stylesheet" href="{% url qunit_css %}" type="text/css" />
-		<script type="text/javascript" src="{% url qunit_js %}"></script>
-		
-		<!-- CSS -->
-		{% for src in media.css %}
-		<link rel="stylesheet" href="{{ MEDIA_URL }}{{ src }}" type="text/css" />
-		{% endfor %}
+{% block title %}QUnit Test Suite{% endblock title %}
 
-		<!-- JS -->
-		{% for src in media.js %}
-		<script type="text/javascript" src="{{ MEDIA_URL }}{{ src }}"></script>
-		{% endfor %}
+{% block framework_media %}
+	<link rel="stylesheet" href="{% url qunit_css %}" type="text/css" />
+	<script type="text/javascript" src="{% url qunit_js %}"></script>
+{% endblock framework_media %}
 
-		<!-- QUnit Tests -->
-		<script type="text/javascript">
-			{{ tests|safe }}
-		</script>	
-	</head>
-	
-	<body>
-		<h1 id="qunit-header">QUnit Test Suite{% if app %} - {{ app }}{% endif %}</h1>
-		<h2 id="qunit-banner"></h2>
-		<div id="qunit-testrunner-toolbar"></div>
-		<h2 id="qunit-userAgent"></h2>
-		<ol id="qunit-tests"></ol>
-		<div id="qunit-fixture"></div>
-
-		<!-- Fixtures -->
-		{{ html|safe }}
-	</body>
-	
-</html>
+{% block content %}
+	<div id="qunit"></div>
+	{{ block.super }}
+{% endblock content %}

@@ -1,37 +1,41 @@
-<html>
+{% extends "jstest/base_spec.html" %}
 
-	<head>
-	  	<title>Jasmine Test Suite{% if app %} - {{ app }}{% endif %}</title>
-  
-		<link rel="stylesheet" href="{% url jasmine_css %}" type="text/css" />
-		<script type="text/javascript" src="{% url jasmine_js %}"></script>
-		<script type="text/javascript" src="{% url jasmine_html_js %}"></script>
+{% block title %}Jasmine Test Suite{% endblock title %}
 
-		<!-- CSS -->
-		{% for src in media.css %}
-		<link rel="stylesheet" href="{{ MEDIA_URL }}{{ src }}" type="text/css" />
-		{% endfor %}
+{% block framework_media %}
+	<link rel="stylesheet" href="{% url jasmine_css %}" type="text/css" />
+	<script type="text/javascript" src="{% url jasmine_js %}"></script>
+	<script type="text/javascript" src="{% url jasmine_html_js %}"></script>
+{% endblock framework_media %}
 
-		<!-- JS -->
-		{% for src in media.js %}
-		<script type="text/javascript" src="{{ MEDIA_URL }}{{ src }}"></script>
-		{% endfor %}
-  
-		<!-- Jasmine Tests -->
-		<script type="text/javascript">
-			{{ tests|safe }}
-		</script>
-	</head>
+{% block content %}
+	{{ block.super }}
+	<script type="text/javascript">
+	(function() {
+	  var jasmineEnv = jasmine.getEnv();
+	  jasmineEnv.updateInterval = 1000;
 
-	<body>
-		<div id="main">
-		  <!-- Fixtures -->
-		  {{ html|safe }}
-		</div>
-		<script type="text/javascript">
-			jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-			jasmine.getEnv().execute();
-		</script>
-	</body>
-	
-</html>
+	  var htmlReporter = new jasmine.HtmlReporter();
+
+	  jasmineEnv.addReporter(htmlReporter);
+
+	  jasmineEnv.specFilter = function(spec) {
+	    return htmlReporter.specFilter(spec);
+	  };
+
+	  var currentWindowOnload = window.onload;
+
+	  window.onload = function() {
+	    if (currentWindowOnload) {
+	      currentWindowOnload();
+	    }
+	    execJasmine();
+	  };
+
+	  function execJasmine() {
+	    jasmineEnv.execute();
+	  }
+
+	})();
+	</script>
+{% endblock content %}
