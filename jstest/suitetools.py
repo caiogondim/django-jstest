@@ -9,86 +9,76 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 
+class FrameworkNotSupported(Exception):
+    pass
+
+
 class SuiteRender(object):
 
     SUPPORTED = ('qunit', 'jasmine')
 
     def __init__(self, framework=None, app=None):
-        self.app = app
-
         if framework in self.SUPPORTED:
             self.framework = framework
         else:
-            raise FrameworkNotSupported('Framework  %s not supported' % framework)
+            raise FrameworkNotSupported('Framework %s not supported' % framework)
+
+        self.app = app
         self.modules = self._get_modules_with_jstest()
+        self.media = {"js": [], "css": []}
+        self.tests = ""
+        self.html = ""
+
+        self._get_data()
 
     def _get_modules_with_jstest(self):
-        apps, modules = [a for a in settings.INSTALLED_APPS], []
-        app = self.app
+        apps = settings.INSTALLED_APPS
+        modules = []
 
-        if app is not None:
-            if not app in apps:
+        if self.app is not None:
+            if not self.app in apps:
                 return []
-            apps = [app]
+            apps = [self.app]
 
         for a in apps:
-            test_module_path = "%s.tests" % (a)
             try:
-                module = getattr(__import__(test_module_path, locals(), globals(), ["js"], 3), "js")
+                module = getattr(__import__("%s.tests" % a, locals(), globals(), ["jstest"], 3), "jstest")
                 modules.append(module)
             except:
                 pass
 
         return modules
 
-    def _get_json_media(self):
-        media = {"js": [], "css": []}
+    def _get_data(self):
+        for m in self.modules:
+            for top, dirs, files in os.walk(m.__path__[0]):
+                self._parse_media_content(top, files)
+                self._parse_tests(top, files)
+                self._parse_fixtures(top, files)
+
+    def _parse_media_content(self, top, files):
         json_name = "media.json"
+        if json_name in files:
+            content = simplejson.loads(open(os.path.join(top, json_name), 'r').read())
+            self.media["js"] += content["js"]
+            self.media["css"] += content["css"]
 
-        for m in self.modules:
-            for top, dirs, files in os.walk(m.__path__[0] + "/" + self.framework):
-                if json_name in files:
-                    try:
-                        content = simplejson.loads(open(os.path.join(top, json_name), 'r').read())
-                        media["js"] += content["js"]
-                        media["css"] += content["css"]
-                    except:
-                        pass
+    def _parse_tests(self, top, files):
+        tests_name = "tests_%s.js" % self.framework
+        if tests_name in files:
+            self.tests += open(os.path.join(top, tests_name), 'r').read()
 
-        return media
-
-    def _get_tests(self):
-        content = ""
-        tests_name = "tests.js"
-
-        for m in self.modules:
-            for top, dirs, files in os.walk(m.__path__[0] + "/" + self.framework):
-                try:
-                    content += open(os.path.join(top, tests_name), 'r').read()
-                except:
-                    pass
-
-        return content
-
-    def _get_fixtures(self):
-        content = ""
+    def _parse_fixtures(self, top, files):
         html_name = "fixtures.html"
-
-        for m in self.modules:
-            for top, dirs, files in os.walk(m.__path__[0] + "/" + self.framework):
-                try:
-                    content += open(os.path.join(top, html_name), 'r').read()
-                except:
-                    pass
-
-        return content
+        if html_name in files:
+            self.html += open(os.path.join(top, html_name), 'r').read()
 
     def to_browser(self, request):
         context = {
             'app': self.app,
-            'media': self._get_json_media(),
-            'tests': self._get_tests(),
-            'html': self._get_fixtures()
+            'media': self.media,
+            'tests': self.tests,
+            'html': self.html
         }
 
         return render_to_response(
