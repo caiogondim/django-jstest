@@ -63,6 +63,7 @@ class SuiteRender(object):
             self.media["js"] += content["js"]
             self.media["css"] += content["css"]
 
+    # TODO: verificar arquivos em "files" com os prefixos "test_framework_"
     def _parse_tests(self, top, files):
         tests_name = "tests_%s.js" % self.framework
         if tests_name in files:
