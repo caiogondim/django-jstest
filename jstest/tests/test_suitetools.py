@@ -1,10 +1,10 @@
 # coding: utf-8
 
-from django.test import TestCase
+import unittest
 from jstest.suitetools import SuiteRender
 
 
-class SuiteRenderTest(TestCase):
+class SuiteRenderTest(unittest.TestCase):
 
     def test_initializing_suiterender_with_default_options(self):
         render = SuiteRender()
@@ -18,3 +18,4 @@ class SuiteRenderTest(TestCase):
     def test_initializing_suiterender_with_unknow_app(self):
         render = SuiteRender(app='unknow')
         self.assertEquals(render.app, None)
+
