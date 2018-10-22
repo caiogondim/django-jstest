@@ -14,7 +14,7 @@ http://jquery.org/license
 
 Jasmine v1.2.0
 =========
-http://pivotal.github.com/jasmine/
+https://jasmine.github.io/
 
 Copyright (c) 2008-2011 Pivotal Labs
 MIT license
